@@ -1,0 +1,115 @@
+!!!!!!! Core-Router
+enable
+configure terminal
+hostname Core-Router
+interface GigabitEthernet0/0
+ description MANAGEMENT
+ ip address 192.168.1.2 255.255.255.0
+ no shutdown
+exit
+username admin privilege 15 secret cisco
+ip domain-name techretail.local
+crypto key generate rsa modulus 2048
+ip ssh version 2
+line vty 0 4
+ transport input ssh
+ login local
+end
+write
+
+
+!!!!!!! R1
+enable
+configure terminal
+hostname R1
+interface GigabitEthernet0/0
+ description MANAGEMENT
+ ip address 192.168.1.3 255.255.255.0
+ no shutdown
+exit
+username admin privilege 15 secret cisco
+ip domain-name techretail.local
+crypto key generate rsa modulus 2048
+ip ssh version 2
+line vty 0 4
+ transport input ssh
+ login local
+end
+write
+
+
+!!!!!!! R2
+enable
+configure terminal
+interface GigabitEthernet0/0
+ description MANAGEMENT
+ ip address 192.168.1.5 255.255.255.0
+ no shutdown
+exit
+username admin privilege 15 secret cisco
+ip domain-name techretail.local
+crypto key generate rsa modulus 2048
+ip ssh version 2
+line vty 0 4
+ transport input ssh
+ login local
+end
+write
+
+
+!!!!!!! SW1
+enable
+configure terminal
+interface FastEthernet0/0
+ description MANAGEMENT_L3
+ no switchport
+ ip address 192.168.1.4 255.255.255.0
+ no shutdown
+exit
+username admin privilege 15 secret cisco
+ip domain-name techretail.local
+crypto key generate rsa modulus 2048
+ip ssh version 2
+line vty 0 4
+ transport input ssh
+ login local
+end
+write
+
+
+!!!!!!! SW2
+enable
+configure terminal
+interface FastEthernet0/0
+ description MANAGEMENT_L3
+ no switchport
+ ip address 192.168.1.6 255.255.255.0
+ no shutdown
+exit
+username admin privilege 15 secret cisco
+ip domain-name techretail.local
+crypto key generate rsa modulus 2048
+ip ssh version 2
+line vty 0 4
+ transport input ssh
+ login local
+end
+write
+
+
+!!!!! PC1
+ip 192.168.20.10 192.168.20.1 24
+save
+
+
+!!!!! PC2
+ip 192.168.21.10 192.168.21.1 24
+save
+
+!!!!! PC3
+ip 192.168.30.10 192.168.30.1 24
+save
+
+!!!!! PC4
+ip 192.168.31.10 192.168.31.1 24
+save

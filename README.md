@@ -29,6 +29,16 @@ Group Assignment for WIC2005 PROGRAMMABLE NETWORK. This project automates the de
 
 ![Network Topology](images/topology.png)
 
+## 🔌 Day 0 Configuration (Bootstrap)
+Before running the automation scripts, every device must have a basic "Day 0" configuration manually applied via the console. This ensures the GNS3/EVE-NG controller can reach the devices via SSH.
+
+Copy and paste the configuration in [zero-day-config.txt](zero-day-config.txt).
+
+### Credentials used in this lab:
+- **Username:** admin
+- **Password:** cisco
+- **Enable Secret:** cisco
+
 ## 📦 Installation
 Clone the repository:
 
@@ -69,6 +79,31 @@ python3 deploy_network.py
 - OSPF Area 0 on WAN, Area 1 on Spoke LANs.
 - NAT/PAT configured on Spokes for Direct Internet Access (DIA).
 - IPSec VPN established directly between Site 1 and Site 2.
+
+### Network Configuration Overview
+This project automates a Hybrid Hub-and-Spoke network topology designed for enterprise connectivity. It integrates local switching, dynamic routing, direct internet access, and secure site-to-site tunneling.
+
+#### 1. Layer 2 Switching (Campus LAN)
+- VLAN Segmentation: Each branch site is segmented into four distinct VLANs: Data (10), Voice (20), Guest (30), and POS (40).
+- Trunking: Uplinks from Access Switches to Branch Routers use 802.1Q Encapsulation to carry tagged traffic.
+- Access Layer: Ports are statically assigned to VLANs, with PortFast enabled to bypass Spanning Tree listening states for end devices.
+
+##### 2. Layer 3 Routing (OSPF)
+Area Design:
+- Area 0 (Backbone): Connects the WAN links between the Core Router and Branch Routers (R1, R2).
+- Area 1 (Stub/Branch): Contains the local LAN subnets at each branch site.
+- WAN Adjacency: WAN links are configured as OSPF Point-to-Point networks to eliminate DR/BDR elections and speed up convergence.
+- Inter-VLAN Routing: Branch Routers perform Router-on-a-Stick (ROAS) using 802.1Q sub-interfaces to route traffic between local VLANs.
+
+3. Internet Edge (NAT/PAT)
+- Direct Internet Access (DIA): Branches do not backhaul internet traffic to HQ. Instead, they route directly to the ISP (simulated by the Core).
+- NAT Overload (PAT): Internal private IPs (RFC1918) are translated to the router's single public WAN IP using Port Address Translation, allowing multiple users to share one public identity.
+- Virtual Reassembly: IP Virtual Fragmentation Reassembly (VFR) is enabled to handle fragmented packets during translation.
+
+4. WAN Security (IPSec VPN)
+- Architecture: Direct Spoke-to-Spoke VPN. While the physical path goes through the Core, the logical tunnel is established directly between Site 1 and Site 2.
+- Encryption: Uses AES-256 for encryption and SHA-HMAC for integrity (IKEv1 / ISAKMP Group 14).
+- Traffic Filtering: Specific Access Control Lists (ACLs) ensure that VPN traffic is excluded from NAT and encapsulated into the tunnel immediately.
 
 ## 🔍 Verification
 
