@@ -67,8 +67,7 @@ python3 check_connectivity.py
 
 ### 2. Deploy Configuration
 Run the main script to push configurations to all devices.
-```
-Bash
+```Bash
 python3 deploy_network.py
 ```
 
