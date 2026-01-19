@@ -1,0 +1,80 @@
+# --- HQ Core (The Hub) ---
+Core-Router:
+  hostname: 192.168.1.2
+  groups:
+    - hubs
+  data:
+    wan_links:
+      - interface: "GigabitEthernet1/0"
+        ip: "203.0.113.1"
+        mask: "255.255.255.252"
+        neighbor_ip: "203.0.113.2"
+      - interface: "GigabitEthernet2/0"
+        ip: "203.0.113.5"
+        mask: "255.255.255.252"
+        neighbor_ip: "203.0.113.6"
+    ospf_area: 0
+
+# --- Site 1 (R1 + SW1) ---
+R1:
+  hostname: 192.168.1.3
+  groups:
+    - spokes
+  data:
+    wan_if: "GigabitEthernet1/0"
+    wan_ip: "203.0.113.2"
+    wan_mask: "255.255.255.252"
+    
+    # VPN CONFIGURATION (Direct to R2)
+    remote_peer_ip: "203.0.113.6"
+    remote_site_subnets:
+      - 192.168.30.0 0.0.0.255
+      - 192.168.31.0 0.0.0.255
+      - 192.168.32.0 0.0.0.255
+      - 192.168.33.0 0.0.0.255
+
+    lan_if: "FastEthernet3/0"
+    site_octet: 20
+    ospf_area: 1
+
+SW1:
+  hostname: 192.168.1.4
+  groups:
+    - switches
+  data:
+    uplink_interface: "FastEthernet4/0"
+    mgmt_ip: 192.168.1.4
+    mgmt_mask: 255.255.255.0
+    default_gateway: 192.168.1.254
+
+# --- Site 2 (R2 + SW2) ---
+R2:
+  hostname: 192.168.1.5
+  groups:
+    - spokes
+  data:
+    wan_if: "GigabitEthernet2/0"
+    wan_ip: "203.0.113.6"
+    wan_mask: "255.255.255.252"
+
+    # VPN CONFIGURATION (Direct to R1)
+    remote_peer_ip: "203.0.113.2"
+    remote_site_subnets:
+      - 192.168.20.0 0.0.0.255
+      - 192.168.21.0 0.0.0.255
+      - 192.168.22.0 0.0.0.255
+      - 192.168.23.0 0.0.0.255
+
+    lan_if: "FastEthernet3/0"
+    site_octet: 30
+    ospf_area: 1
+
+SW2:
+  hostname: 192.168.1.6
+  groups:
+    - switches
+  data:
+    uplink_interface: "FastEthernet4/0"
+    mgmt_ip: 192.168.1.6
+    mgmt_mask: 255.255.255.0
+    default_gateway: 192.168.1.254

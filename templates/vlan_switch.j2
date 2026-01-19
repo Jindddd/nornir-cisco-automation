@@ -1,0 +1,56 @@
+! Create VLAN Database
+{% for vlan in host['vlans'] %}
+vlan {{ vlan.id }}
+ name {{ vlan.name }}
+!
+{% endfor %}
+
+! Configure Uplink Trunk to Router
+interface {{ host['uplink_interface'] }}
+ description UPLINK_TO_ROUTER
+ switchport trunk encapsulation dot1q
+ switchport mode trunk
+ ! Include default VLANs to prevent 'Bad VLAN allowed list' error
+ switchport trunk allowed vlan 1,10,20,30,40,1002-1005
+ no shutdown
+!
+
+! Port 1 -> VLAN 10 (Data/Mgmt)
+interface FastEthernet4/1
+ description ACCESS_DATA_MGMNT
+ switchport
+ switchport mode access
+ switchport access vlan 10
+ spanning-tree portfast
+ no shutdown
+!
+
+! Port 2 -> VLAN 20 (Voice)
+interface FastEthernet4/2
+ description ACCESS_VOICE
+ switchport
+ switchport mode access
+ switchport access vlan 20
+ spanning-tree portfast
+ no shutdown
+!
+
+! Port 3 -> VLAN 30 (Guest WiFi)
+interface FastEthernet4/3
+ description ACCESS_GUEST
+ switchport
+ switchport mode access
+ switchport access vlan 30
+ spanning-tree portfast
+ no shutdown
+!
+
+! Port 4 -> VLAN 40 (POS System)
+interface FastEthernet4/4
+ description ACCESS_POS
+ switchport
+ switchport mode access
+ switchport access vlan 40
+ spanning-tree portfast
+ no shutdown
+!

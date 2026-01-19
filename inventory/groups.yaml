@@ -1,0 +1,72 @@
+# 1. DEFINE GLOBAL VARIABLES HERE
+global_params:
+  data:
+    domain: "techretail.local"
+    syslog: "192.168.1.1"
+    vlans:
+      - id: 10
+        name: DATA_MGMNT
+      - id: 20
+        name: VOICE_VOIP
+      - id: 30
+        name: GUEST_WIFI
+      - id: 40
+        name: POS_SYSTEMS
+    # All routers need to know these for VPN ACLs
+    spoke_subnets:
+      - 192.168.20.0 0.0.0.255
+      - 192.168.21.0 0.0.0.255
+      - 192.168.22.0 0.0.0.255
+      - 192.168.23.0 0.0.0.255
+      - 192.168.30.0 0.0.0.255
+      - 192.168.31.0 0.0.0.255
+      - 192.168.32.0 0.0.0.255
+      - 192.168.33.0 0.0.0.255
+
+# 2. DEVICE TYPE GROUPS
+routers:
+  groups:
+    - global_params
+  platform: cisco_ios
+  username: admin
+  password: cisco  # <--- UPDATED
+  connection_options:
+    netmiko:
+      extras:
+        secret: cisco  # <--- UPDATED
+  data:
+    type: "router"
+
+switches:
+  groups:
+    - global_params
+  platform: cisco_ios
+  username: admin
+  password: cisco  # <--- UPDATED
+  connection_options:
+    netmiko:
+      extras:
+        secret: cisco  # <--- UPDATED
+  data:
+    type: "switch"
+
+# 3. FUNCTIONAL ROLES
+hubs:
+  groups:
+    - routers
+  data:
+    role: "hub"
+    # Disable NAT for the Core (Transit only)
+    enable_nat: false
+
+spokes:
+  groups:
+    - routers
+  data:
+    role: "spoke"
+    # Enable NAT for Branches (DIA)
+    enable_nat: true
+    hq_public_ip: "203.0.113.1"
+    # Used for VPN ACL matching
+    hq_lan_net: "192.168.10.0"
+    hq_lan_mask: "0.0.0.255"

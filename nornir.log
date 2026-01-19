@@ -1,0 +1,339 @@
+2026-01-19 12:37:59,649 -  nornir.core -     INFO -        run() - Running task 'deploy_switch_config' with args {} on 2 hosts
+2026-01-19 12:38:02,301 - nornir.core.task -    ERROR -      start() - Host 'SW2': task 'Pushing Switch Configuration' failed with traceback:
+Traceback (most recent call last):
+  File "/home/jdgoh/nornir/venv/lib/python3.10/site-packages/netmiko/base_connection.py", line 1146, in establish_connection
+    self.remote_conn_pre.connect(**ssh_connect_params)
+  File "/home/jdgoh/nornir/venv/lib/python3.10/site-packages/paramiko/client.py", line 483, in connect
+    self._auth(
+  File "/home/jdgoh/nornir/venv/lib/python3.10/site-packages/paramiko/client.py", line 814, in _auth
+    raise saved_exception
+  File "/home/jdgoh/nornir/venv/lib/python3.10/site-packages/paramiko/client.py", line 801, in _auth
+    self._transport.auth_password(username, password)
+  File "/home/jdgoh/nornir/venv/lib/python3.10/site-packages/paramiko/transport.py", line 1632, in auth_password
+    return self.auth_handler.wait_for_response(my_event)
+  File "/home/jdgoh/nornir/venv/lib/python3.10/site-packages/paramiko/auth_handler.py", line 263, in wait_for_response
+    raise e
+paramiko.ssh_exception.AuthenticationException: Authentication failed.
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "/home/jdgoh/nornir/venv/lib/python3.10/site-packages/nornir/core/task.py", line 98, in start
+    r = self.task(self, **self.params)
+  File "/home/jdgoh/nornir/venv/lib/python3.10/site-packages/nornir_netmiko/tasks/netmiko_send_config.py", line 28, in netmiko_send_config
+    net_connect = task.host.get_connection(CONNECTION_NAME, task.nornir.config)
+  File "/home/jdgoh/nornir/venv/lib/python3.10/site-packages/nornir/core/inventory.py", line 476, in get_connection
+    self.open_connection(
+  File "/home/jdgoh/nornir/venv/lib/python3.10/site-packages/nornir/core/inventory.py", line 528, in open_connection
+    conn_obj.open(
+  File "/home/jdgoh/nornir/venv/lib/python3.10/site-packages/nornir_netmiko/connections/netmiko.py", line 59, in open
+    connection = ConnectHandler(**parameters)
+  File "/home/jdgoh/nornir/venv/lib/python3.10/site-packages/netmiko/ssh_dispatcher.py", line 460, in ConnectHandler
+    return ConnectionClass(*args, **kwargs)
+  File "/home/jdgoh/nornir/venv/lib/python3.10/site-packages/netmiko/base_connection.py", line 495, in __init__
+    self._open()
+  File "/home/jdgoh/nornir/venv/lib/python3.10/site-packages/netmiko/base_connection.py", line 500, in _open
+    self.establish_connection()
+  File "/home/jdgoh/nornir/venv/lib/python3.10/site-packages/netmiko/base_connection.py", line 1183, in establish_connection
+    raise NetmikoAuthenticationException(msg)
+netmiko.exceptions.NetmikoAuthenticationException: Authentication to device failed.
+
+Common causes of this problem are:
+1. Invalid username and password
+2. Incorrect SSH-key file
+3. Connecting to the wrong device
+
+Device settings: cisco_ios 192.168.1.6:22
+
+
+Authentication failed.
+
+2026-01-19 12:38:02,301 - nornir.core.task -    ERROR -      start() - Host 'SW2': task 'deploy_switch_config' failed with traceback:
+Traceback (most recent call last):
+  File "/home/jdgoh/nornir/venv/lib/python3.10/site-packages/nornir/core/task.py", line 98, in start
+    r = self.task(self, **self.params)
+  File "/home/jdgoh/nornir/deploy_network.py", line 23, in deploy_switch_config
+    task.run(
+  File "/home/jdgoh/nornir/venv/lib/python3.10/site-packages/nornir/core/task.py", line 173, in run
+    raise NornirSubTaskError(task=run_task, result=r)
+nornir.core.exceptions.NornirSubTaskError: Subtask: Pushing Switch Configuration (failed)
+
+
+2026-01-19 12:38:02,322 - nornir.core.task -    ERROR -      start() - Host 'SW1': task 'Pushing Switch Configuration' failed with traceback:
+Traceback (most recent call last):
+  File "/home/jdgoh/nornir/venv/lib/python3.10/site-packages/netmiko/base_connection.py", line 1146, in establish_connection
+    self.remote_conn_pre.connect(**ssh_connect_params)
+  File "/home/jdgoh/nornir/venv/lib/python3.10/site-packages/paramiko/client.py", line 483, in connect
+    self._auth(
+  File "/home/jdgoh/nornir/venv/lib/python3.10/site-packages/paramiko/client.py", line 814, in _auth
+    raise saved_exception
+  File "/home/jdgoh/nornir/venv/lib/python3.10/site-packages/paramiko/client.py", line 801, in _auth
+    self._transport.auth_password(username, password)
+  File "/home/jdgoh/nornir/venv/lib/python3.10/site-packages/paramiko/transport.py", line 1632, in auth_password
+    return self.auth_handler.wait_for_response(my_event)
+  File "/home/jdgoh/nornir/venv/lib/python3.10/site-packages/paramiko/auth_handler.py", line 263, in wait_for_response
+    raise e
+paramiko.ssh_exception.AuthenticationException: Authentication failed.
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "/home/jdgoh/nornir/venv/lib/python3.10/site-packages/nornir/core/task.py", line 98, in start
+    r = self.task(self, **self.params)
+  File "/home/jdgoh/nornir/venv/lib/python3.10/site-packages/nornir_netmiko/tasks/netmiko_send_config.py", line 28, in netmiko_send_config
+    net_connect = task.host.get_connection(CONNECTION_NAME, task.nornir.config)
+  File "/home/jdgoh/nornir/venv/lib/python3.10/site-packages/nornir/core/inventory.py", line 476, in get_connection
+    self.open_connection(
+  File "/home/jdgoh/nornir/venv/lib/python3.10/site-packages/nornir/core/inventory.py", line 528, in open_connection
+    conn_obj.open(
+  File "/home/jdgoh/nornir/venv/lib/python3.10/site-packages/nornir_netmiko/connections/netmiko.py", line 59, in open
+    connection = ConnectHandler(**parameters)
+  File "/home/jdgoh/nornir/venv/lib/python3.10/site-packages/netmiko/ssh_dispatcher.py", line 460, in ConnectHandler
+    return ConnectionClass(*args, **kwargs)
+  File "/home/jdgoh/nornir/venv/lib/python3.10/site-packages/netmiko/base_connection.py", line 495, in __init__
+    self._open()
+  File "/home/jdgoh/nornir/venv/lib/python3.10/site-packages/netmiko/base_connection.py", line 500, in _open
+    self.establish_connection()
+  File "/home/jdgoh/nornir/venv/lib/python3.10/site-packages/netmiko/base_connection.py", line 1183, in establish_connection
+    raise NetmikoAuthenticationException(msg)
+netmiko.exceptions.NetmikoAuthenticationException: Authentication to device failed.
+
+Common causes of this problem are:
+1. Invalid username and password
+2. Incorrect SSH-key file
+3. Connecting to the wrong device
+
+Device settings: cisco_ios 192.168.1.4:22
+
+
+Authentication failed.
+
+2026-01-19 12:38:02,322 - nornir.core.task -    ERROR -      start() - Host 'SW1': task 'deploy_switch_config' failed with traceback:
+Traceback (most recent call last):
+  File "/home/jdgoh/nornir/venv/lib/python3.10/site-packages/nornir/core/task.py", line 98, in start
+    r = self.task(self, **self.params)
+  File "/home/jdgoh/nornir/deploy_network.py", line 23, in deploy_switch_config
+    task.run(
+  File "/home/jdgoh/nornir/venv/lib/python3.10/site-packages/nornir/core/task.py", line 173, in run
+    raise NornirSubTaskError(task=run_task, result=r)
+nornir.core.exceptions.NornirSubTaskError: Subtask: Pushing Switch Configuration (failed)
+
+
+2026-01-19 12:38:02,323 -  nornir.core -     INFO -        run() - Running task 'deploy_router_config' with args {} on 3 hosts
+2026-01-19 12:38:04,919 - nornir.core.task -    ERROR -      start() - Host 'R2': task 'Pushing Router Configuration' failed with traceback:
+Traceback (most recent call last):
+  File "/home/jdgoh/nornir/venv/lib/python3.10/site-packages/netmiko/base_connection.py", line 1146, in establish_connection
+    self.remote_conn_pre.connect(**ssh_connect_params)
+  File "/home/jdgoh/nornir/venv/lib/python3.10/site-packages/paramiko/client.py", line 483, in connect
+    self._auth(
+  File "/home/jdgoh/nornir/venv/lib/python3.10/site-packages/paramiko/client.py", line 814, in _auth
+    raise saved_exception
+  File "/home/jdgoh/nornir/venv/lib/python3.10/site-packages/paramiko/client.py", line 801, in _auth
+    self._transport.auth_password(username, password)
+  File "/home/jdgoh/nornir/venv/lib/python3.10/site-packages/paramiko/transport.py", line 1632, in auth_password
+    return self.auth_handler.wait_for_response(my_event)
+  File "/home/jdgoh/nornir/venv/lib/python3.10/site-packages/paramiko/auth_handler.py", line 263, in wait_for_response
+    raise e
+paramiko.ssh_exception.AuthenticationException: Authentication failed.
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "/home/jdgoh/nornir/venv/lib/python3.10/site-packages/nornir/core/task.py", line 98, in start
+    r = self.task(self, **self.params)
+  File "/home/jdgoh/nornir/venv/lib/python3.10/site-packages/nornir_netmiko/tasks/netmiko_send_config.py", line 28, in netmiko_send_config
+    net_connect = task.host.get_connection(CONNECTION_NAME, task.nornir.config)
+  File "/home/jdgoh/nornir/venv/lib/python3.10/site-packages/nornir/core/inventory.py", line 476, in get_connection
+    self.open_connection(
+  File "/home/jdgoh/nornir/venv/lib/python3.10/site-packages/nornir/core/inventory.py", line 528, in open_connection
+    conn_obj.open(
+  File "/home/jdgoh/nornir/venv/lib/python3.10/site-packages/nornir_netmiko/connections/netmiko.py", line 59, in open
+    connection = ConnectHandler(**parameters)
+  File "/home/jdgoh/nornir/venv/lib/python3.10/site-packages/netmiko/ssh_dispatcher.py", line 460, in ConnectHandler
+    return ConnectionClass(*args, **kwargs)
+  File "/home/jdgoh/nornir/venv/lib/python3.10/site-packages/netmiko/base_connection.py", line 495, in __init__
+    self._open()
+  File "/home/jdgoh/nornir/venv/lib/python3.10/site-packages/netmiko/base_connection.py", line 500, in _open
+    self.establish_connection()
+  File "/home/jdgoh/nornir/venv/lib/python3.10/site-packages/netmiko/base_connection.py", line 1183, in establish_connection
+    raise NetmikoAuthenticationException(msg)
+netmiko.exceptions.NetmikoAuthenticationException: Authentication to device failed.
+
+Common causes of this problem are:
+1. Invalid username and password
+2. Incorrect SSH-key file
+3. Connecting to the wrong device
+
+Device settings: cisco_ios 192.168.1.5:22
+
+
+Authentication failed.
+
+2026-01-19 12:38:04,919 - nornir.core.task -    ERROR -      start() - Host 'R2': task 'deploy_router_config' failed with traceback:
+Traceback (most recent call last):
+  File "/home/jdgoh/nornir/venv/lib/python3.10/site-packages/nornir/core/task.py", line 98, in start
+    r = self.task(self, **self.params)
+  File "/home/jdgoh/nornir/deploy_network.py", line 41, in deploy_router_config
+    task.run(
+  File "/home/jdgoh/nornir/venv/lib/python3.10/site-packages/nornir/core/task.py", line 173, in run
+    raise NornirSubTaskError(task=run_task, result=r)
+nornir.core.exceptions.NornirSubTaskError: Subtask: Pushing Router Configuration (failed)
+
+
+2026-01-19 12:38:04,944 - nornir.core.task -    ERROR -      start() - Host 'Core-Router': task 'Pushing Router Configuration' failed with traceback:
+Traceback (most recent call last):
+  File "/home/jdgoh/nornir/venv/lib/python3.10/site-packages/netmiko/base_connection.py", line 1146, in establish_connection
+    self.remote_conn_pre.connect(**ssh_connect_params)
+  File "/home/jdgoh/nornir/venv/lib/python3.10/site-packages/paramiko/client.py", line 483, in connect
+    self._auth(
+  File "/home/jdgoh/nornir/venv/lib/python3.10/site-packages/paramiko/client.py", line 814, in _auth
+    raise saved_exception
+  File "/home/jdgoh/nornir/venv/lib/python3.10/site-packages/paramiko/client.py", line 801, in _auth
+    self._transport.auth_password(username, password)
+  File "/home/jdgoh/nornir/venv/lib/python3.10/site-packages/paramiko/transport.py", line 1632, in auth_password
+    return self.auth_handler.wait_for_response(my_event)
+  File "/home/jdgoh/nornir/venv/lib/python3.10/site-packages/paramiko/auth_handler.py", line 263, in wait_for_response
+    raise e
+paramiko.ssh_exception.AuthenticationException: Authentication failed.
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "/home/jdgoh/nornir/venv/lib/python3.10/site-packages/nornir/core/task.py", line 98, in start
+    r = self.task(self, **self.params)
+  File "/home/jdgoh/nornir/venv/lib/python3.10/site-packages/nornir_netmiko/tasks/netmiko_send_config.py", line 28, in netmiko_send_config
+    net_connect = task.host.get_connection(CONNECTION_NAME, task.nornir.config)
+  File "/home/jdgoh/nornir/venv/lib/python3.10/site-packages/nornir/core/inventory.py", line 476, in get_connection
+    self.open_connection(
+  File "/home/jdgoh/nornir/venv/lib/python3.10/site-packages/nornir/core/inventory.py", line 528, in open_connection
+    conn_obj.open(
+  File "/home/jdgoh/nornir/venv/lib/python3.10/site-packages/nornir_netmiko/connections/netmiko.py", line 59, in open
+    connection = ConnectHandler(**parameters)
+  File "/home/jdgoh/nornir/venv/lib/python3.10/site-packages/netmiko/ssh_dispatcher.py", line 460, in ConnectHandler
+    return ConnectionClass(*args, **kwargs)
+  File "/home/jdgoh/nornir/venv/lib/python3.10/site-packages/netmiko/base_connection.py", line 495, in __init__
+    self._open()
+  File "/home/jdgoh/nornir/venv/lib/python3.10/site-packages/netmiko/base_connection.py", line 500, in _open
+    self.establish_connection()
+  File "/home/jdgoh/nornir/venv/lib/python3.10/site-packages/netmiko/base_connection.py", line 1183, in establish_connection
+    raise NetmikoAuthenticationException(msg)
+netmiko.exceptions.NetmikoAuthenticationException: Authentication to device failed.
+
+Common causes of this problem are:
+1. Invalid username and password
+2. Incorrect SSH-key file
+3. Connecting to the wrong device
+
+Device settings: cisco_ios 192.168.1.2:22
+
+
+Authentication failed.
+
+2026-01-19 12:38:04,944 - nornir.core.task -    ERROR -      start() - Host 'Core-Router': task 'deploy_router_config' failed with traceback:
+Traceback (most recent call last):
+  File "/home/jdgoh/nornir/venv/lib/python3.10/site-packages/nornir/core/task.py", line 98, in start
+    r = self.task(self, **self.params)
+  File "/home/jdgoh/nornir/deploy_network.py", line 41, in deploy_router_config
+    task.run(
+  File "/home/jdgoh/nornir/venv/lib/python3.10/site-packages/nornir/core/task.py", line 173, in run
+    raise NornirSubTaskError(task=run_task, result=r)
+nornir.core.exceptions.NornirSubTaskError: Subtask: Pushing Router Configuration (failed)
+
+
+2026-01-19 12:38:04,961 - nornir.core.task -    ERROR -      start() - Host 'R1': task 'Pushing Router Configuration' failed with traceback:
+Traceback (most recent call last):
+  File "/home/jdgoh/nornir/venv/lib/python3.10/site-packages/netmiko/base_connection.py", line 1146, in establish_connection
+    self.remote_conn_pre.connect(**ssh_connect_params)
+  File "/home/jdgoh/nornir/venv/lib/python3.10/site-packages/paramiko/client.py", line 483, in connect
+    self._auth(
+  File "/home/jdgoh/nornir/venv/lib/python3.10/site-packages/paramiko/client.py", line 814, in _auth
+    raise saved_exception
+  File "/home/jdgoh/nornir/venv/lib/python3.10/site-packages/paramiko/client.py", line 801, in _auth
+    self._transport.auth_password(username, password)
+  File "/home/jdgoh/nornir/venv/lib/python3.10/site-packages/paramiko/transport.py", line 1632, in auth_password
+    return self.auth_handler.wait_for_response(my_event)
+  File "/home/jdgoh/nornir/venv/lib/python3.10/site-packages/paramiko/auth_handler.py", line 263, in wait_for_response
+    raise e
+paramiko.ssh_exception.AuthenticationException: Authentication failed.
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "/home/jdgoh/nornir/venv/lib/python3.10/site-packages/nornir/core/task.py", line 98, in start
+    r = self.task(self, **self.params)
+  File "/home/jdgoh/nornir/venv/lib/python3.10/site-packages/nornir_netmiko/tasks/netmiko_send_config.py", line 28, in netmiko_send_config
+    net_connect = task.host.get_connection(CONNECTION_NAME, task.nornir.config)
+  File "/home/jdgoh/nornir/venv/lib/python3.10/site-packages/nornir/core/inventory.py", line 476, in get_connection
+    self.open_connection(
+  File "/home/jdgoh/nornir/venv/lib/python3.10/site-packages/nornir/core/inventory.py", line 528, in open_connection
+    conn_obj.open(
+  File "/home/jdgoh/nornir/venv/lib/python3.10/site-packages/nornir_netmiko/connections/netmiko.py", line 59, in open
+    connection = ConnectHandler(**parameters)
+  File "/home/jdgoh/nornir/venv/lib/python3.10/site-packages/netmiko/ssh_dispatcher.py", line 460, in ConnectHandler
+    return ConnectionClass(*args, **kwargs)
+  File "/home/jdgoh/nornir/venv/lib/python3.10/site-packages/netmiko/base_connection.py", line 495, in __init__
+    self._open()
+  File "/home/jdgoh/nornir/venv/lib/python3.10/site-packages/netmiko/base_connection.py", line 500, in _open
+    self.establish_connection()
+  File "/home/jdgoh/nornir/venv/lib/python3.10/site-packages/netmiko/base_connection.py", line 1183, in establish_connection
+    raise NetmikoAuthenticationException(msg)
+netmiko.exceptions.NetmikoAuthenticationException: Authentication to device failed.
+
+Common causes of this problem are:
+1. Invalid username and password
+2. Incorrect SSH-key file
+3. Connecting to the wrong device
+
+Device settings: cisco_ios 192.168.1.3:22
+
+
+Authentication failed.
+
+2026-01-19 12:38:04,961 - nornir.core.task -    ERROR -      start() - Host 'R1': task 'deploy_router_config' failed with traceback:
+Traceback (most recent call last):
+  File "/home/jdgoh/nornir/venv/lib/python3.10/site-packages/nornir/core/task.py", line 98, in start
+    r = self.task(self, **self.params)
+  File "/home/jdgoh/nornir/deploy_network.py", line 41, in deploy_router_config
+    task.run(
+  File "/home/jdgoh/nornir/venv/lib/python3.10/site-packages/nornir/core/task.py", line 173, in run
+    raise NornirSubTaskError(task=run_task, result=r)
+nornir.core.exceptions.NornirSubTaskError: Subtask: Pushing Router Configuration (failed)
+
+
+2026-01-19 12:39:07,607 -  nornir.core -     INFO -        run() - Running task 'deploy_switch_config' with args {} on 2 hosts
+2026-01-19 12:39:16,729 -  nornir.core -     INFO -        run() - Running task 'deploy_router_config' with args {} on 3 hosts
+2026-01-19 12:41:54,560 -  nornir.core -     INFO -        run() - Running task 'verify_router' with args {} on 3 hosts
+2026-01-19 12:41:55,849 -  nornir.core -     INFO -        run() - Running task 'verify_switch' with args {} on 2 hosts
+2026-01-19 12:44:54,659 -  nornir.core -     INFO -        run() - Running task 'verify_router' with args {} on 3 hosts
+2026-01-19 12:44:55,981 -  nornir.core -     INFO -        run() - Running task 'verify_switch' with args {} on 2 hosts
+2026-01-19 12:45:18,222 -  nornir.core -     INFO -        run() - Running task 'verify_router' with args {} on 3 hosts
+2026-01-19 12:45:19,512 -  nornir.core -     INFO -        run() - Running task 'verify_switch' with args {} on 2 hosts
+2026-01-19 12:52:55,988 -  nornir.core -     INFO -        run() - Running task 'verify_router' with args {} on 3 hosts
+2026-01-19 12:52:57,320 -  nornir.core -     INFO -        run() - Running task 'verify_switch' with args {} on 2 hosts
+2026-01-19 12:53:14,345 -  nornir.core -     INFO -        run() - Running task 'deploy_switch_config' with args {} on 2 hosts
+2026-01-19 12:53:29,369 -  nornir.core -     INFO -        run() - Running task 'deploy_router_config' with args {} on 3 hosts
+2026-01-19 13:05:23,425 -  nornir.core -     INFO -        run() - Running task 'deploy_switch_config' with args {} on 2 hosts
+2026-01-19 13:05:38,184 -  nornir.core -     INFO -        run() - Running task 'deploy_router_config' with args {} on 3 hosts
+2026-01-19 13:20:45,752 -  nornir.core -     INFO -        run() - Running task 'deploy_switch_config' with args {} on 2 hosts
+2026-01-19 13:21:01,379 -  nornir.core -     INFO -        run() - Running task 'deploy_router_config' with args {} on 3 hosts
+2026-01-19 13:33:46,033 -  nornir.core -     INFO -        run() - Running task 'deploy_switch_config' with args {} on 2 hosts
+2026-01-19 13:34:00,911 -  nornir.core -     INFO -        run() - Running task 'deploy_router_config' with args {} on 3 hosts
+2026-01-19 13:49:26,593 -  nornir.core -     INFO -        run() - Running task 'deploy_switch_config' with args {} on 2 hosts
+2026-01-19 13:49:42,176 -  nornir.core -     INFO -        run() - Running task 'deploy_router_config' with args {} on 3 hosts
+2026-01-19 14:28:11,156 -  nornir.core -     INFO -        run() - Running task 'deploy_switch_config' with args {} on 2 hosts
+2026-01-19 14:28:26,715 -  nornir.core -     INFO -        run() - Running task 'deploy_router_config' with args {} on 3 hosts
+2026-01-19 14:34:44,718 -  nornir.core -     INFO -        run() - Running task 'deploy_switch_config' with args {} on 2 hosts
+2026-01-19 14:34:59,629 -  nornir.core -     INFO -        run() - Running task 'deploy_router_config' with args {} on 3 hosts
+2026-01-19 22:39:42,676 -  nornir.core -     INFO -        run() - Running task 'deploy_switch_config' with args {} on 2 hosts
+2026-01-19 22:39:57,463 -  nornir.core -     INFO -        run() - Running task 'deploy_router_config' with args {} on 3 hosts
+2026-01-19 22:40:18,120 -  nornir.core -     INFO -        run() - Running task 'deploy_switch_config' with args {} on 2 hosts
+2026-01-19 22:40:32,866 -  nornir.core -     INFO -        run() - Running task 'deploy_router_config' with args {} on 3 hosts
+2026-01-19 22:42:02,841 -  nornir.core -     INFO -        run() - Running task 'deploy_switch_config' with args {} on 2 hosts
+2026-01-19 22:42:17,617 -  nornir.core -     INFO -        run() - Running task 'deploy_router_config' with args {} on 3 hosts
+2026-01-19 22:46:46,636 -  nornir.core -     INFO -        run() - Running task 'deploy_switch_config' with args {} on 2 hosts
+2026-01-19 22:47:01,570 -  nornir.core -     INFO -        run() - Running task 'deploy_router_config' with args {} on 3 hosts
+2026-01-19 22:49:55,986 -  nornir.core -     INFO -        run() - Running task 'deploy_switch_config' with args {} on 2 hosts
+2026-01-19 22:50:46,087 -  nornir.core -     INFO -        run() - Running task 'deploy_switch_config' with args {} on 2 hosts
+2026-01-19 22:51:01,024 -  nornir.core -     INFO -        run() - Running task 'deploy_router_config' with args {} on 3 hosts
+2026-01-19 22:51:46,667 -  nornir.core -     INFO -        run() - Running task 'deploy_switch_config' with args {} on 2 hosts
+2026-01-19 22:52:01,610 -  nornir.core -     INFO -        run() - Running task 'deploy_router_config' with args {} on 3 hosts

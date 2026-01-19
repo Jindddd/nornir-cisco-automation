@@ -1,0 +1,129 @@
+! 1. OSPF PROCESS DEFINITION
+router ospf 1
+ router-id {{ host['hostname'] }}
+ passive-interface default
+ 
+ ! --- OSPF INTERFACE CONFIGURATION ---
+ {% if host['role'] == 'hub' %}
+  {% for link in host['wan_links'] %}
+  no passive-interface {{ link.interface }}
+  {% endfor %}
+ {% else %}
+  no passive-interface {{ host['wan_if'] }}
+ {% endif %}
+
+ {% if host['lan_if'] is defined %}
+ no passive-interface {{ host['lan_if'] }}
+ {% endif %}
+ 
+ {% if host['role'] == 'spoke' %}
+ {% for vlan in host['vlans'] %}
+ no passive-interface {{ host['lan_if'] }}.{{ vlan.id }}
+ {% endfor %}
+ {% endif %}
+
+ {% if host['role'] == 'hub' %}
+ default-information originate always
+ {% endif %}
+!
+
+! 2. CONFIGURING WAN INTERFACES
+{% if host['role'] == 'hub' %}
+ {% for link in host['wan_links'] %}
+ interface {{ link.interface }}
+  description WAN_LINK_TO_SITE
+  ip address {{ link.ip }} {{ link.mask }}
+  ip ospf 1 area 0
+  no shutdown
+ !
+ {% endfor %}
+{% else %}
+ interface {{ host['wan_if'] }}
+  description WAN_LINK_TO_HQ
+  ip address {{ host['wan_ip'] }} {{ host['wan_mask'] }}
+  {% if host['enable_nat'] %}
+  ip nat outside
+  {% endif %}
+  ip ospf 1 area 0
+  no shutdown
+{% endif %}
+
+! 3. LAN CONFIGURATION
+{% if host['role'] == 'spoke' %}
+ {% for vlan in host['vlans'] %}
+ interface {{ host['lan_if'] }}.{{ vlan.id }}
+  encapsulation dot1Q {{ vlan.id }}
+  ip address 192.168.{{ host['site_octet'] + loop.index0 }}.1 255.255.255.0
+  {% if host['enable_nat'] %}
+  ip nat inside
+  {% endif %}
+  ip ospf 1 area {{ host['ospf_area'] }}
+  no shutdown
+ !
+ {% endfor %}
+ interface {{ host['lan_if'] }}
+  no shutdown
+ !
+{% elif host['lan_if'] is defined %}
+ interface {{ host['lan_if'] }}
+  description HQ_LAN_DATACENTER
+  ip address {{ host['lan_ip'] }} 255.255.255.0
+  ip nat inside
+  ip ospf 1 area {{ host['ospf_area'] }}
+  no shutdown
+ !
+{% endif %}
+
+! 4. NAT CONFIGURATION (Updated with OSPF Exclusions)
+{% if host['enable_nat'] %}
+ip access-list extended ACL_NAT
+ ! 1. Do NOT NAT OSPF Traffic
+ deny ospf any any
+ ! 2. Do NOT NAT WAN Link Traffic (e.g. 203.0.113.0/30)
+ deny ip {{ host['wan_ip'] | replace(host['wan_ip'].split('.')[3], '0') }} 0.0.0.3 any
+ 
+ ! 3. NAT Exemption for Site-to-Site VPN
+ {% if host['role'] == 'spoke' %}
+  remark Exemption for Site-to-Site VPN
+  {% for remote_net in host['remote_site_subnets'] %}
+  deny ip any {{ remote_net }}
+  {% endfor %}
+ {% endif %}
+ 
+ ! 4. Permit Internet Access
+ remark Permit General Internet Traffic
+ permit ip any any
+!
+! Apply NAT to WAN Interface(s)
+ ip nat inside source list ACL_NAT interface {{ host['wan_if'] }} overload
+{% endif %}
+
+! 5. VPN CONFIGURATION
+{% if host['role'] == 'spoke' %}
+ip access-list extended ACL_VPN_SITE_TO_SITE
+ {% for vlan in host['vlans'] %}
+ {% set local_net = "192.168." ~ (host['site_octet'] + loop.index0) ~ ".0" %}
+ {% for remote_net in host['remote_site_subnets'] %}
+ permit ip {{ local_net }} 0.0.0.255 {{ remote_net }}
+ {% endfor %}
+ {% endfor %}
+!
+crypto isakmp policy 10
+ encr aes 256
+ authentication pre-share
+ group 14
+!
+crypto isakmp key TECHRETAIL_SECRET address {{ host['remote_peer_ip'] }}
+!
+crypto ipsec transform-set TSET_AES_SHA esp-aes 256 esp-sha-hmac
+ mode tunnel
+!
+crypto map VPN_MAP 10 ipsec-isakmp
+ set peer {{ host['remote_peer_ip'] }}
+ set transform-set TSET_AES_SHA
+ match address ACL_VPN_SITE_TO_SITE
+!
+interface {{ host['wan_if'] }}
+ crypto map VPN_MAP
+!
+{% endif %}

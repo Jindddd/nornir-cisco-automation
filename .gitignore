@@ -1,0 +1,13 @@
+# Ignore the logs directory
+logs/
+
+# Ignore Virtual Environment folder
+venv/
+env/
+
+# Ignore Python compiled files
+__pycache__/
+*.pyc
+
+# Ignore GNS3/local system files
+.DS_Store
