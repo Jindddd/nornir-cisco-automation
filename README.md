@@ -33,8 +33,8 @@ Group Assignment for WIC2005 PROGRAMMABLE NETWORK. This project automates the de
 Clone the repository:
 
 ```Bash
-git clone [nornir-cisco-automation](https://github.com/Jindddd/nornir-cisco-automation.git)
-cd YOUR_REPO_NAME
+git clone https://github.com/Jindddd/nornir-cisco-automation.git
+cd nornir-cisco-automation
 ```
 
 Create a virtual environment (optional but recommended):
