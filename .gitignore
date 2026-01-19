@@ -1,5 +1,6 @@
 # Ignore the logs directory
 logs/
+*.log
 
 # Ignore Virtual Environment folder
 venv/
