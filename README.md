@@ -152,3 +152,17 @@ ping 192.168.30.10
 *Why it works: R1 sees traffic destined for 192.168.30.x. The Crypto Map ACL matches this traffic. R1 encrypts the packet and tunnels it to R2. R2 decrypts it and delivers it to PC3. Note: The first ping might timeout while the VPN tunnel negotiates.*
 
 > Check VPN: On R1, run `show crypto isakmp sa` and `show crypto ipsec sa`
+
+## Adding new branch
+### 1. Topology (GNS3/EVE-NG):
+- Add R3 and SW3.
+- Connect R3 to Core-Router (on a new port, e.g., Gi3/0).
+- Apply the Zero-Day Config (Management IP & SSH).
+
+### 2. `inventory/hosts.yaml`:
+- Add R3 & SW3: Define their hostname, management IP, WAN IP, and subnets.
+- Update R1 & R2: Add R3 to their `vpn_peers` list so they form tunnels with it.
+- Update Core-Router: Add the new WAN link interface (`Gi3/0`) so OSPF works.
+
+### 3. `inventory/groups.yaml`:
+- Update `spoke_subnets`: Add Site 3's subnets (`192.168.40.0/24`, etc.) to the global list. This ensures R1 and R2 generate correct ACLs to permit traffic to R3.

@@ -13,6 +13,11 @@ Core-Router:
         ip: "203.0.113.5"
         mask: "255.255.255.252"
         neighbor_ip: "203.0.113.6"
+      # --- UNCOMMENT FOR SITE 3 ---
+      - interface: "GigabitEthernet3/0"
+        ip: "203.0.113.9"
+        mask: "255.255.255.252"
+        neighbor_ip: "203.0.113.10"
     ospf_area: 0
 
 # --- Site 1 (R1 + SW1) ---
@@ -25,13 +30,25 @@ R1:
     wan_ip: "203.0.113.2"
     wan_mask: "255.255.255.252"
     
-    # VPN CONFIGURATION (Direct to R2)
-    remote_peer_ip: "203.0.113.6"
-    remote_site_subnets:
-      - 192.168.30.0 0.0.0.255
-      - 192.168.31.0 0.0.0.255
-      - 192.168.32.0 0.0.0.255
-      - 192.168.33.0 0.0.0.255
+    vpn_peers:
+      # Peer: Site 2 (Active)
+      - ip: "203.0.113.6"
+        id: 10
+        subnets:
+          - 192.168.30.0 0.0.0.255
+          - 192.168.31.0 0.0.0.255
+          - 192.168.32.0 0.0.0.255
+          - 192.168.33.0 0.0.0.255
+
+      # --- UNCOMMENT FOR SITE 3 ---
+      # Peer: Site 3 (Future)
+      - ip: "203.0.113.10"
+        id: 20
+        subnets:
+          - 192.168.40.0 0.0.0.255
+          - 192.168.41.0 0.0.0.255
+          - 192.168.42.0 0.0.0.255
+          - 192.168.43.0 0.0.0.255
 
     lan_if: "FastEthernet3/0"
     site_octet: 20
@@ -43,9 +60,6 @@ SW1:
     - switches
   data:
     uplink_interface: "FastEthernet4/0"
-    mgmt_ip: 192.168.1.4
-    mgmt_mask: 255.255.255.0
-    default_gateway: 192.168.1.254
 
 # --- Site 2 (R2 + SW2) ---
 R2:
@@ -57,13 +71,25 @@ R2:
     wan_ip: "203.0.113.6"
     wan_mask: "255.255.255.252"
 
-    # VPN CONFIGURATION (Direct to R1)
-    remote_peer_ip: "203.0.113.2"
-    remote_site_subnets:
-      - 192.168.20.0 0.0.0.255
-      - 192.168.21.0 0.0.0.255
-      - 192.168.22.0 0.0.0.255
-      - 192.168.23.0 0.0.0.255
+    vpn_peers:
+      # Peer: Site 1 (Active)
+      - ip: "203.0.113.2"
+        id: 10
+        subnets:
+          - 192.168.20.0 0.0.0.255
+          - 192.168.21.0 0.0.0.255
+          - 192.168.22.0 0.0.0.255
+          - 192.168.23.0 0.0.0.255
+
+      # --- UNCOMMENT FOR SITE 3 ---
+      # Peer: Site 3 (Future)
+      - ip: "203.0.113.10"
+        id: 20
+        subnets:
+          - 192.168.40.0 0.0.0.255
+          - 192.168.41.0 0.0.0.255
+          - 192.168.42.0 0.0.0.255
+          - 192.168.43.0 0.0.0.255
 
     lan_if: "FastEthernet3/0"
     site_octet: 30
@@ -75,6 +101,40 @@ SW2:
     - switches
   data:
     uplink_interface: "FastEthernet4/0"
-    mgmt_ip: 192.168.1.6
-    mgmt_mask: 255.255.255.0
-    default_gateway: 192.168.1.254
+
+# --- UNCOMMENT ENTIRE SECTION FOR SITE 3 ---
+R3:
+  hostname: 192.168.1.7
+  groups:
+    - spokes
+  data:
+    wan_if: "GigabitEthernet1/0"
+    wan_ip: "203.0.113.10"
+    wan_mask: "255.255.255.252"
+
+    vpn_peers:
+      - ip: "203.0.113.2"  # Site 1
+        id: 10
+        subnets:
+          - 192.168.20.0 0.0.0.255
+          - 192.168.21.0 0.0.0.255
+          - 192.168.22.0 0.0.0.255
+          - 192.168.23.0 0.0.0.255
+      - ip: "203.0.113.6"  # Site 2
+        id: 20
+        subnets:
+          - 192.168.30.0 0.0.0.255
+          - 192.168.31.0 0.0.0.255
+          - 192.168.32.0 0.0.0.255
+          - 192.168.33.0 0.0.0.255
+
+    lan_if: "FastEthernet3/0"
+    site_octet: 40
+    ospf_area: 1
+
+SW3:
+  hostname: 192.168.1.8
+  groups:
+    - switches
+  data:
+    uplink_interface: "FastEthernet4/0"

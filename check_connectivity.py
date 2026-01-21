@@ -26,8 +26,8 @@ def ping_ip(ip_address):
     # Windows uses -n, Linux/Mac uses -c
     param = '-n' if platform.system().lower() == 'windows' else '-c'
     
-    # Ping 1 time, wait max 2 seconds (timeout helps speed up failed checks)
-    command = ['ping', param, '1', ip_address]
+    # Ping 2 times, wait max 2 seconds (timeout helps speed up failed checks)
+    command = ['ping', param, '2', ip_address]
     
     # Suppress output (stdout and stderr) so the console stays clean
     try:
