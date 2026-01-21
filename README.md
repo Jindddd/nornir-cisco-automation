@@ -71,6 +71,12 @@ Run the main script to push configurations to all devices.
 python3 deploy_network.py
 ```
 
+### 3. Verify Configuration
+Run the main script to push configurations to all devices.
+```Bash
+python3 verify_network.py
+```
+
 ## 📝 Configuration Details
 **Switches:** Configured with VLANs 10, 20, 30, 40 and Trunks.
 
@@ -104,7 +110,7 @@ Area Design:
 - **Encryption:** Uses AES-256 for encryption and SHA-HMAC for integrity (IKEv1 / ISAKMP Group 14).
 - **Traffic Filtering:** Specific Access Control Lists (ACLs) ensure that VPN traffic is excluded from NAT and encapsulated into the tunnel immediately.
 
-## 🔍 Verification
+## 🔍 Verify Connectivity
 
 | Device Name | Connect to Switch Port | Assigned VLAN | Purpose |
 |-------------|------------------------|---------------|---------|
