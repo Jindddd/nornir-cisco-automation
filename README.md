@@ -153,16 +153,104 @@ ping 192.168.30.10
 
 > Check VPN: On R1, run `show crypto isakmp sa` and `show crypto ipsec sa`
 
-## Adding new branch
-### 1. Topology (GNS3/EVE-NG):
-- Add R3 and SW3.
-- Connect R3 to Core-Router (on a new port, e.g., Gi3/0).
-- Apply the Zero-Day Config (Management IP & SSH).
+## 📈 Scaling the Network: How to Add a New Branch
 
-### 2. `inventory/hosts.yaml`:
-- Add R3 & SW3: Define their hostname, management IP, WAN IP, and subnets.
-- Update R1 & R2: Add R3 to their `vpn_peers` list so they form tunnels with it.
-- Update Core-Router: Add the new WAN link interface (`Gi3/0`) so OSPF works.
+This automation framework is designed to be scalable. Adding a new site (e.g., **Site 3**) does not require changing any Python code or Jinja2 templates. You simply need to update the data files.
 
-### 3. `inventory/groups.yaml`:
-- Update `spoke_subnets`: Add Site 3's subnets (`192.168.40.0/24`, etc.) to the global list. This ensures R1 and R2 generate correct ACLs to permit traffic to R3.
+Follow this 4-step procedure to add a new branch to the network.
+
+### Step 1: Update Topology (GNS3/EVE-NG)
+
+1. **Add Devices:** Drag in a new Router (**R3**) and Switch (**SW3**).
+2. **Connect Uplinks:**
+* Connect **R3** to the **Core-Router** (e.g., `GigabitEthernet3/0`).
+* Connect **SW3** to **R3**.
+
+
+3. **Bootstrap:** Apply the "Day 0" configuration manually via console to enable SSH access.
+* *Reference:* Copy the config from `zero-day-config.txt`.
+
+
+
+### Step 2: Define the New Site in `hosts.yaml`
+
+Open `inventory/hosts.yaml` and add the definitions for the new devices. You must define the **WAN IP**, **VPN Peers**, and **LAN Subnets**.
+
+**Add R3 (Site 3):**
+
+```yaml
+R3:
+  hostname: 192.168.1.7
+  groups:
+    - spokes
+  data:
+    wan_if: "GigabitEthernet1/0"
+    wan_ip: "203.0.113.10"
+    wan_mask: "255.255.255.252"
+    
+    # Define VPN Tunnels to existing sites
+    vpn_peers:
+      - ip: "203.0.113.2"  # Link to Site 1
+        id: 10
+        subnets: [192.168.20.0 0.0.0.255, 192.168.21.0 0.0.0.255, ...]
+      - ip: "203.0.113.6"  # Link to Site 2
+        id: 20
+        subnets: [192.168.30.0 0.0.0.255, 192.168.31.0 0.0.0.255, ...]
+
+    lan_if: "FastEthernet3/0"
+    site_octet: 40  # Generates 192.168.40.x, 41.x...
+    ospf_area: 1
+
+```
+
+### Step 3: Update Existing Peers (Full Mesh)
+
+For a Full Mesh VPN, existing sites must know about the new site. Update **R1** and **R2** in `inventory/hosts.yaml` to include R3 as a peer.
+
+**Update R1:**
+
+```yaml
+R1:
+  data:
+    vpn_peers:
+      - ip: "203.0.113.6" # Existing Link to R2
+        # ... existing config ...
+      
+      # NEW LINK TO SITE 3
+      - ip: "203.0.113.10"
+        id: 20
+        subnets:
+          - 192.168.40.0 0.0.0.255
+          - 192.168.41.0 0.0.0.255
+          - 192.168.42.0 0.0.0.255
+          - 192.168.43.0 0.0.0.255
+
+```
+
+*(Repeat this process for R2).*
+
+### Step 4: Update Global Groups
+
+Open `inventory/groups.yaml` and add the new site's subnets to the global list. This ensures all routers generate the correct NAT exemptions.
+
+```yaml
+global_params:
+  data:
+    spoke_subnets:
+      # ... existing subnets ...
+      # ADD SITE 3 SUBNETS
+      - 192.168.40.0 0.0.0.255
+      - 192.168.41.0 0.0.0.255
+      - 192.168.42.0 0.0.0.255
+      - 192.168.43.0 0.0.0.255
+
+```
+
+### Step 5: Deploy
+
+Run the deployment script. Nornir will configure the new site and automatically update the existing sites to establish the new VPN tunnels.
+
+```bash
+python3 deploy_network.py
+
+```
