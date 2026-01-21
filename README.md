@@ -72,7 +72,7 @@ python3 deploy_network.py
 ```
 
 ### 3. Verify Configuration
-Run the main script to push configurations to all devices.
+Run the main script to verify configurations on all devices.
 ```Bash
 python3 verify_network.py
 ```
