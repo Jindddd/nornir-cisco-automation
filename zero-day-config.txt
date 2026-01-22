@@ -18,11 +18,10 @@ interface GigabitEthernet2/0
  ip address 203.0.113.5 255.255.255.252
  no shutdown
 !
-! --- UNCOMMENT FOR SITE 3 ---
-! interface GigabitEthernet3/0
-!  description WAN_TO_R3
-!  ip address 203.0.113.9 255.255.255.252
-!  no shutdown
+interface GigabitEthernet3/0
+ description WAN_TO_R3
+ ip address 203.0.113.9 255.255.255.252
+ no shutdown
 !
 exit
 ! 3. Standard SSH Setup
