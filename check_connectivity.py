@@ -51,6 +51,8 @@ def main():
         print(f"{Fore.RED}Error: inventory/hosts.yaml not found!{Style.RESET_ALL}")
         return
 
+    failures = []
+
     for name, data in hosts.items():
         ip = data.get('hostname')
         port = data.get('port', 22) # Default to 22 if not specified in YAML
@@ -59,21 +61,37 @@ def main():
 
         if not ip:
             print(f"{Fore.YELLOW}SKIP (No IP){Style.RESET_ALL}")
+            failures.append(f"{name} (No IP)")
             continue
 
         # Logic: If Port 22, use Ping. If Port != 22, use TCP Check.
+        success = False
         if port == 22:
             if check_ping(ip):
                 print(f"{Fore.GREEN}PING OK{Style.RESET_ALL}")
+                success = True
             else:
                 print(f"{Fore.RED}FAIL (Unreachable){Style.RESET_ALL}")
         else:
             if check_socket(ip, port):
                 print(f"{Fore.GREEN}PORT OK (NAT Works){Style.RESET_ALL}")
+                success = True
             else:
                 print(f"{Fore.RED}FAIL (Port Closed){Style.RESET_ALL}")
+        
+        if not success:
+            failures.append(name)
     
-    print("\n" + "-"*40 + "\n")
+    # --- SUMMARY SECTION ---
+    print("\n" + "="*60)
+    if not failures:
+        print(f"{Fore.GREEN}✅ SUCCESS: All {len(hosts)} devices are reachable.{Style.RESET_ALL}")
+        print(f"{Fore.GREEN}🚀 You can PROCEED with the deployment.{Style.RESET_ALL}")
+    else:
+        print(f"{Fore.RED}❌ FAILURE: {len(failures)} device(s) failed connectivity check.{Style.RESET_ALL}")
+        print(f"{Fore.RED}   Failed Devices: {', '.join(failures)}{Style.RESET_ALL}")
+        print(f"{Fore.YELLOW}⚠️  Please fix connectivity issues before proceeding.{Style.RESET_ALL}")
+    print("="*60 + "\n")
 
 if __name__ == "__main__":
     main()
