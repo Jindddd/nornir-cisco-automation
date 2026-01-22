@@ -27,7 +27,7 @@ Group Assignment for WIC2005 PROGRAMMABLE NETWORK. This project automates the de
 
 ## 📡 Topology
 
-![Network Topology](images/topology.png)
+![GNS3 Topology](images/topology.png)
 
 ## 🔌 Day 0 Configuration (Bootstrap)
 Before running the automation scripts, every device must have a basic "Day 0" configuration manually applied via the console. This ensures the GNS3/EVE-NG controller can reach the devices via SSH.
