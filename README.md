@@ -82,6 +82,14 @@ Run the main script to verify configurations on all devices.
 python3 verify_network.py
 ```
 
+## 🏗 Network Architecture: Jump Host & NAT
+This project simulates a real-world WAN environment where remote branches are **not** on the same flat management network as the controller.
+
+* **Routers (Jump Hosts):** Acting as the gateway to the branch. They are accessible via their **WAN IP** (e.g., `203.0.113.2`).
+* **Switches (Hidden Behind NAT):** Located inside the branch LAN (e.g., `172.16.1.2`). They are **not** directly reachable via a public IP.
+* **Access Method:** To manage a switch, we use **NAT Port Forwarding**.
+* **Traffic Flow:** SSH to Router WAN IP (`203.0.113.x`) on Port **2022** -> Router forwards to Switch Port **22**.
+
 ## 📝 Configuration Details
 **Switches:** Configured with VLANs 10, 20, 30, 40 and Trunks.
 
