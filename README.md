@@ -58,6 +58,11 @@ Install dependencies:
 pip install -r requirements.txt
 ```
 
+Add route to your network:
+```Bash
+sudo ip route add 203.0.113.0/24 via 192.168.1.2
+```
+
 ## ▶️ Usage
 ### 1. Check Connectivity
 Verify that all devices in your topology are reachable.

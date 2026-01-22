@@ -1,12 +1,31 @@
-!!!!!!! Core-Router
+!!!!!!! Core-Router (Gateway)
 enable
 configure terminal
 hostname Core-Router
+! 1. Management & Gateway
 interface GigabitEthernet0/0
  description MANAGEMENT
  ip address 192.168.1.2 255.255.255.0
  no shutdown
+!
+! 2. WAN Links
+interface GigabitEthernet1/0
+ description WAN_TO_R1
+ ip address 203.0.113.1 255.255.255.252
+ no shutdown
+interface GigabitEthernet2/0
+ description WAN_TO_R2
+ ip address 203.0.113.5 255.255.255.252
+ no shutdown
+!
+! --- UNCOMMENT FOR SITE 3 ---
+! interface GigabitEthernet3/0
+!  description WAN_TO_R3
+!  ip address 203.0.113.9 255.255.255.252
+!  no shutdown
+!
 exit
+! 3. Standard SSH Setup
 username admin privilege 15 secret cisco
 ip domain-name techretail.local
 crypto key generate rsa modulus 2048
@@ -18,15 +37,31 @@ end
 write
 
 
-!!!!!!! R1
+!!!!!!! R1 (Site 1 - Jump Host)
 enable
 configure terminal
 hostname R1
-interface GigabitEthernet0/0
- description MANAGEMENT
- ip address 192.168.1.3 255.255.255.0
+! 1. WAN Interface (Outside)
+interface GigabitEthernet1/0
+ description WAN_TO_CORE
+ ip address 203.0.113.2 255.255.255.252
+ ip nat outside
  no shutdown
-exit
+!
+! 2. LAN Interface (Inside) -> Connects to SW1
+interface FastEthernet3/0
+ description LAN_GATEWAY
+ ip address 172.16.1.1 255.255.255.0
+ ip nat inside
+ no shutdown
+!
+! 4. Return Route to Controller
+ip route 192.168.1.0 255.255.255.0 203.0.113.1
+!
+! 5. NAT Port Forwarding (Access SW1 via R1-IP:2022)
+ip nat inside source static tcp 172.16.1.2 22 interface GigabitEthernet1/0 2022
+!
+! 6. SSH
 username admin privilege 15 secret cisco
 ip domain-name techretail.local
 crypto key generate rsa modulus 2048
@@ -37,95 +72,34 @@ line vty 0 4
 end
 write
 
-!!!!!!! SW1
-enable
-configure terminal
-interface FastEthernet0/0
- description MANAGEMENT_L3
- no switchport
- ip address 192.168.1.4 255.255.255.0
- no shutdown
-exit
-username admin privilege 15 secret cisco
-ip domain-name techretail.local
-crypto key generate rsa modulus 2048
-ip ssh version 2
-line vty 0 4
- transport input ssh
- login local
-end
-write
-
-
-!!!!!!! R2
-enable
-configure terminal
-interface GigabitEthernet0/0
- description MANAGEMENT
- ip address 192.168.1.5 255.255.255.0
- no shutdown
-exit
-username admin privilege 15 secret cisco
-ip domain-name techretail.local
-crypto key generate rsa modulus 2048
-ip ssh version 2
-line vty 0 4
- transport input ssh
- login local
-end
-write
-
-!!!!!!! SW2
-enable
-configure terminal
-interface FastEthernet0/0
- description MANAGEMENT_L3
- no switchport
- ip address 192.168.1.6 255.255.255.0
- no shutdown
-exit
-username admin privilege 15 secret cisco
-ip domain-name techretail.local
-crypto key generate rsa modulus 2048
-ip ssh version 2
-line vty 0 4
- transport input ssh
- login local
-end
-write
-
-
+!!!!!!! SW1 (Site 1 - Hidden Behind NAT)
 !!!!!!!
-R3
 enable
 configure terminal
-hostname R3
-interface GigabitEthernet0/0
- description MANAGEMENT
- ip address 192.168.1.7 255.255.255.0
- no shutdown
-exit
-username admin privilege 15 secret cisco
-ip domain-name techretail.local
-crypto key generate rsa modulus 2048
-ip ssh version 2
-line vty 0 4
- transport input ssh
- login local
-end
-write
-
-!!!!!!!
-SW3
-enable
-configure terminal
-hostname SW3
+hostname SW1
+! 1. Disable Old Management
 interface FastEthernet0/0
- description MANAGEMENT_L3
+ shutdown
+!
+! 2. Uplink to R1
+interface FastEthernet4/0
+ description UPLINK_TO_R1
  no switchport
- ip address 192.168.1.8 255.255.255.0
+ switchport
+ switchport mode trunk
+ no shutdown
+!
+! 3. Internal Management VLAN
+interface Vlan 1
+ description MANAGEMENT
+ ip address 172.16.1.2 255.255.255.0
  no shutdown
 exit
+!
+! 4. Gateway (Points to R1)
+ip default-gateway 172.16.1.1
+!
+! 5. SSH
 username admin privilege 15 secret cisco
 ip domain-name techretail.local
 crypto key generate rsa modulus 2048
@@ -137,6 +111,61 @@ end
 write
 
 
+!!!!!!! R2 (Site 2 - Jump Host)
+enable
+configure terminal
+hostname R2
+interface GigabitEthernet2/0
+ description WAN_TO_CORE
+ ip address 203.0.113.6 255.255.255.252
+ ip nat outside
+ no shutdown
+interface FastEthernet3/0
+ description LAN_GATEWAY
+ ip address 172.16.2.1 255.255.255.0
+ ip nat inside
+ no shutdown
+exit
+!
+ip route 192.168.1.0 255.255.255.0 203.0.113.5
+!
+! NAT Forwarding: Port 2022 -> SW2
+ip nat inside source static tcp 172.16.2.2 22 interface GigabitEthernet2/0 2022
+!
+username admin privilege 15 secret cisco
+ip domain-name techretail.local
+crypto key generate rsa modulus 2048
+ip ssh version 2
+line vty 0 4
+ transport input ssh
+ login local
+end
+write
+
+!!!!!!! SW2 (Site 2 - Hidden Behind NAT)
+enable
+configure terminal
+hostname SW2
+interface FastEthernet4/0
+ description UPLINK_TO_R2
+ switchport mode trunk
+ no shutdown
+interface Vlan 1
+ ip address 172.16.2.2 255.255.255.0
+ no shutdown
+exit
+ip default-gateway 172.16.2.1
+username admin privilege 15 secret cisco
+ip domain-name techretail.local
+crypto key generate rsa modulus 2048
+ip ssh version 2
+line vty 0 4
+ transport input ssh
+ login local
+end
+write
+
+!!!!!
 !!!!! PC1
 ip 192.168.20.10 192.168.20.1 24
 save
@@ -152,6 +181,61 @@ save
 !!!!! PC4
 ip 192.168.31.10 192.168.31.1 24
 save
+
+
+!!! SITE 3 DEMO 
+!!!!! R3 (Site 3 - Jump Host)
+enable
+configure terminal
+hostname R3
+interface GigabitEthernet1/0
+ description WAN_TO_CORE
+ ip address 203.0.113.10 255.255.255.252
+ ip nat outside
+ no shutdown
+interface FastEthernet3/0
+ description LAN_GATEWAY
+ ip address 172.16.3.1 255.255.255.0
+ ip nat inside
+ no shutdown
+exit
+ip route 192.168.1.0 255.255.255.0 203.0.113.9
+ip nat inside source static tcp 172.16.3.2 22 interface GigabitEthernet1/0 2022
+username admin privilege 15 secret cisco
+ip domain-name techretail.local
+crypto key generate rsa modulus 2048
+ip ssh version 2
+line vty 0 4
+ transport input ssh
+ login local
+end
+write
+
+!!!!! SW3 (Site 3 - Hidden)
+enable
+configure terminal
+hostname SW3
+interface FastEthernet4/0
+ description UPLINK_TO_R3
+ no switchport
+ switchport
+ switchport mode trunk
+ no shutdown
+interface Vlan 1
+ description MANAGEMENT
+ ip address 172.16.3.2 255.255.255.0
+ no shutdown
+exit
+ip default-gateway 172.16.3.1
+username admin privilege 15 secret cisco
+ip domain-name techretail.local
+crypto key generate rsa modulus 2048
+ip ssh version 2
+line vty 0 4
+ transport input ssh
+ login local
+end
+write
 
 !!!!! PC5
 ip 192.168.40.10 192.168.40.1 24
